@@ -15,13 +15,6 @@ export const authGuard: CanActivateFn = (route) => {
   }
 
   // Partie 3 : vérifier si l'utilisateur a le bon rôle
-  const rolesAutorises = route.data['roles'] as string[] | undefined;
-
-  if (rolesAutorises && !rolesAutorises.some(
-    role => utilisateur.roles.includes(role)
-  )) {
-    return router.createUrlTree(['/acces-interdit']);
-  }
 
   return true;
 };
