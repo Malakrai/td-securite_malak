@@ -1,4 +1,4 @@
-package com.example.banque.utilisateur.out;
+/*package com.example.banque.utilisateur.out;
 
 import com.example.banque.utilisateur.Utilisateur;
 import com.example.banque.utilisateur.UtilisateurRepository;
@@ -11,7 +11,7 @@ import java.util.Optional;
  * Faux utilisateur courant : tout le monde est « app.utilisateur-fake » (alice par défaut).
  * Il sert tant que l'appli n'a pas de sécurité. À remplacer par un UtilisateurCourant
  * qui lit le SecurityContext (supprimez alors cette classe).
- */
+ *//* 
 @Component
 public class UtilisateurCourantFake implements UtilisateurCourant {
 
@@ -28,3 +28,4 @@ public class UtilisateurCourantFake implements UtilisateurCourant {
         return utilisateurs.findByLogin(login);
     }
 }
+*/
