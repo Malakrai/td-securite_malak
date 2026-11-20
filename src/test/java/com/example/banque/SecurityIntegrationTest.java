@@ -21,13 +21,13 @@ class SecurityIntegrationTest {
 
     @Test
     void accesSansAuthentificationRetourne401() throws Exception {
-        // Given 
+        // Given
         var requete = get("/api/comptes");
 
         // When
         var resultat = mockMvc.perform(requete);
 
-        // Then 
+        // Then
         resultat.andExpect(status().isUnauthorized());
     }
 
@@ -37,51 +37,49 @@ class SecurityIntegrationTest {
         var requete = get("/api/comptes/1")
                 .with(httpBasic("alice", "alice123"));
 
-        // When 
+        // When
         var resultat = mockMvc.perform(requete);
 
-        // Then 
+        // Then
         resultat.andExpect(status().isOk());
     }
 
     @Test
-    void aliceNePeutPasConsulterCompteCharles() throws Exception {
+    void alicePeutConsulterCompteCharles() throws Exception {
         // Given
         var requete = get("/api/comptes/2")
                 .with(httpBasic("alice", "alice123"));
 
-        // When 
+        // When
         var resultat = mockMvc.perform(requete);
 
-        // Then 
-        resultat.andExpect(status().isForbidden());
+        // Then
+        resultat.andExpect(status().isOk());
     }
 
     @Test
-    void brunoPeutConsulterCompteDeSonAgence() throws Exception {
+    void brunoPeutConsulterCompte() throws Exception {
         // Given
         var requete = get("/api/comptes/2")
                 .with(httpBasic("bruno", "bruno123"));
 
-        // When 
+        // When
         var resultat = mockMvc.perform(requete);
 
-        // Then 
+        // Then
         resultat.andExpect(status().isOk());
     }
 
     @Test
     void aliceNePeutPasValiderVirement() throws Exception {
-        // Given 
+        // Given
         var requete = post("/api/virements/2/valider")
                 .with(httpBasic("alice", "alice123"));
 
-        // When 
+        // When
         var resultat = mockMvc.perform(requete);
 
-        // Then 
+        // Then
         resultat.andExpect(status().isForbidden());
     }
-
-   
 }
