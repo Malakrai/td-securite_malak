@@ -1,6 +1,6 @@
-Author: Malak RAI
+**Auteur : Malak RAI**
 
-## Partie 1
+## Partie 1 
 
 On a commencé par ajouter Spring Security dans le projet.
 
@@ -11,7 +11,7 @@ On a ensuite créé :
 
 On a utilisé BCrypt pour les mots de passe et Basic Auth pour l'authentification.
 
-On a aussi activé CORS pour autoriser les requêtes Angular vers Spring Boot.
+On a aussi activé CORS pour permettre à Angular de communiquer avec Spring Boot.
 
 ## Partie 2 
 
@@ -19,25 +19,26 @@ Dans cette partie, on a modifié `AuthService` pour envoyer une requête HTTP GE
 
 On a ensuite créé :
 - `auth.interceptor.ts` pour ajouter automatiquement l'en-tête Authorization.
-- `auth.guard.ts` pour protéger les pages.
-- Une page `acces-interdit` pour les utilisateurs qui n'ont pas les droits nécessaires.
+- `auth.guard.ts` pour protéger les pages non accessibles sans connexion.
+- Une page `acces-interdit` pour afficher un message d'accès refusé.
 
-On a testé la connexion et la déconnexion avec Alice et Bruno.
+On a testé la connexion et la déconnexion avec Alice et Bruno, ainsi que les identifiants incorrects.
 
 ## Partie 3 
 
-On a ajouté des restrictions selon les rôles :
+Dans cette partie, on a commencé à gérer les autorisations selon les rôles.
 
-- CLIENT : peut consulter uniquement ses propres comptes.
-- CONSEILLER : peut consulter les comptes de son agence et valider les virements.
+On a utilisé `hasRole("CONSEILLER")` dans `SecurityConfig.java` pour limiter la validation des virements aux conseillers.
 
-On a modifié `CompteService.java` pour vérifier les autorisations avant de retourner les informations d'un compte.
+Un utilisateur avec le rôle `CLIENT` ne peut donc pas valider un virement, contrairement à un `CONSEILLER`.
 
-On a également utilisé `hasRole("CONSEILLER")` dans Spring Security pour protéger la validation des virements.
+Pour les comptes bancaires, on a conservé le fonctionnement initial de `CompteService.java`. Tous les utilisateurs authentifiés peuvent consulter les comptes.
+
+Le filtrage des comptes par propriétaire ou par agence n'a pas été conservé dans la version finale.
 
 ## Tests réalisés
 
-On a utilisé curl avec l'option `-v` pour vérifier les réponses HTTP.
+On a utilisé `curl -v` pour tester les requêtes HTTP.
 
 Exemples de commandes :
 
@@ -50,12 +51,14 @@ curl.exe -v -u alice:alice123 http://localhost:8080/api/comptes/1
 
 curl.exe -v -u alice:alice123 http://localhost:8080/api/comptes/2
 
-curl.exe -v -u bruno:bruno123 http://localhost:8080/api/comptes
+curl.exe -v -u alice:alice123 -X POST http://localhost:8080/api/virements/2/valider
+
+curl.exe -v -u bruno:bruno123 -X POST http://localhost:8080/api/virements/2/valider
 ```
 
-Résultats obtenus :
-- 200 : accès autorisé.
-- 401 : utilisateur non authentifié.
-- 403 : accès interdit.
+Les principaux codes HTTP vérifiés sont :
+- `200` : requête réussie.
+- `401` : utilisateur non authentifié.
+- `403` : accès interdit.
 
-On a aussi créé une classe `SecurityIntegrationTest.java` avec JUnit 5 et MockMvc pour automatiser les tests de sécurité.
+On a également créé une classe `SecurityIntegrationTest.java` avec JUnit 5 et MockMvc pour automatiser les tests d'authentification et d'autorisation.
