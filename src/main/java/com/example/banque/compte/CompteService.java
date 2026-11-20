@@ -26,3 +26,5 @@ public class CompteService {
                 .orElseThrow(() -> new NoSuchElementException("Compte " + id + " introuvable"));
     }
 }
+
+

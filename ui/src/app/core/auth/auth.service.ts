@@ -1,4 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+
+import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { API } from '../api/banque';
 
 export interface Utilisateur {
@@ -11,34 +14,33 @@ export interface Utilisateur {
  */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private readonly http = inject(HttpClient);
+
   readonly utilisateur = signal<Utilisateur | null>(null);
+
   private identifiants: string | null = null;
 
   get authorization(): string | null {
     return this.identifiants;
   }
+
   /**
    * Vérifie les identifiants auprès du serveur (GET /api/me avec l'en-tête
    * Basic) et mémorise l'utilisateur. Doit échouer (throw) si le serveur répond 401.
    */
   async connecter(login: string, motDePasse: string): Promise<void> {
     // TODO : appeler /api/me, retenir les identifiants pour l'intercepteur,
-   const basic = 'Basic ' + btoa(`${login}:${motDePasse}`);
+    // puis renseigner `utilisateur`.
 
-    // When : on vérifie les identifiants auprès du serveur
-    const reponse = await fetch(`${API}/me`, {
-      headers: {
-        Authorization: basic
-      }
-    });
+    const basic = 'Basic ' + btoa(`${login}:${motDePasse}`);
 
-    // Then : si l'authentification échoue
-    if (!reponse.ok) {
-      throw new Error('Identifiants incorrects');
-    }
-
-    // Sinon, on mémorise l'utilisateur connecté
-    const utilisateur: Utilisateur = await reponse.json();
+    const utilisateur = await firstValueFrom(
+      this.http.get<Utilisateur>(`${API}/me`, {
+        headers: new HttpHeaders({
+          Authorization: basic
+        })
+      })
+    );
 
     this.identifiants = basic;
     this.utilisateur.set(utilisateur);
@@ -50,4 +52,3 @@ export class AuthService {
     this.utilisateur.set(null);
   }
 }
-
